@@ -14,6 +14,8 @@ RUN GO111MODULE=on GOPROXY=https://proxy.golang.org go mod download
 COPY . .
 
 RUN make build
+RUN chmod u+s /go/whoami/whoami
+RUN chmod g+s /go/whoami/whoami
 
 # Create a minimal container to run a Golang static binary
 FROM scratch

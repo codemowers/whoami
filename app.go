@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"syscall"
 	"strconv"
 	"strings"
 	"sync"
@@ -73,6 +74,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/data", handle(dataHandler, verbose))
 	mux.Handle("/echo", handle(echoHandler, verbose))
+	mux.Handle("/proc", handle(procHandler, verbose))
 	mux.Handle("/bench", handle(benchHandler, verbose))
 	mux.Handle("/api", handle(apiHandler, verbose))
 	mux.Handle("/health", handle(healthHandler, verbose))
@@ -134,6 +136,21 @@ func benchHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Content-Type", "text/plain")
 	_, _ = fmt.Fprint(w, "1")
+}
+
+func procHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("Content-Type", "text/plain")
+	fileinfo, _ := os.Stat("/")
+	stat, _ := fileinfo.Sys().(*syscall.Stat_t)
+	_, _ = fmt.Fprintln(w, "Root inode:", stat.Ino)
+	_, _ = fmt.Fprintln(w, "Process ID:", os.Getpid())
+	_, _ = fmt.Fprintln(w, "User ID:", os.Getuid())
+	_, _ = fmt.Fprintln(w, "Group ID:", os.Getgid())
+	_, _ = fmt.Fprintln(w, "Effective User ID:", os.Geteuid())
+	_, _ = fmt.Fprintln(w, "Effective Group ID:", os.Getegid())
+	groups, _ := os.Getgroups()
+	_, _ = fmt.Fprintln(w, "Supplemental groups:", groups)
 }
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {
