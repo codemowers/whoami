@@ -52,7 +52,7 @@ Heath check.
 | `cert`    |                      | Give me a certificate.                  |
 | `key`     |                      | Give me a key.                          |
 | `cacert`  |                      | Give me a CA chain, enforces mutual TLS |
-| `port`    | `WHOAMI_PORT_NUMBER` | Give me a port number. (default: `80`)  |
+| `port`    | `WHOAMI_PORT_NUMBER` | Give me a port number. (default: `9001`) |
 | `name`    | `WHOAMI_NAME`        | Give me a name.                         |
 | `verbose` |                      | Enable verbose logging.                 |
 

@@ -14,4 +14,4 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY whoami /
 
 ENTRYPOINT ["/whoami"]
-EXPOSE 80
+EXPOSE 9001
