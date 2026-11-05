@@ -11,10 +11,10 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"syscall"
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -70,6 +70,8 @@ type Data struct {
 
 func main() {
 	flag.Parse()
+
+	writeProcInfo(os.Stdout)
 
 	mux := http.NewServeMux()
 	mux.Handle("/data", handle(dataHandler, verbose))
@@ -141,9 +143,15 @@ func benchHandler(w http.ResponseWriter, _ *http.Request) {
 func procHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Content-Type", "text/plain")
-	fileinfo, _ := os.Stat("/")
-	stat, _ := fileinfo.Sys().(*syscall.Stat_t)
-	_, _ = fmt.Fprintln(w, "Root inode:", stat.Ino)
+	writeProcInfo(w)
+}
+
+func writeProcInfo(w io.Writer) {
+	if fileinfo, err := os.Stat("/"); err == nil {
+		if stat, ok := fileinfo.Sys().(*syscall.Stat_t); ok {
+			_, _ = fmt.Fprintln(w, "Root inode:", stat.Ino)
+		}
+	}
 	_, _ = fmt.Fprintln(w, "Process ID:", os.Getpid())
 	_, _ = fmt.Fprintln(w, "User ID:", os.Getuid())
 	_, _ = fmt.Fprintln(w, "Group ID:", os.Getgid())
